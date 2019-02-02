@@ -16,6 +16,24 @@
 
   </div>-->
 
+  <div class="col-xs-12 col-sm-6 example-col">
+    <p>DropDownList</p>
+    <kendo-dropdownlist  [data]="vehicleTypesMap"
+    [(ngModel)] = "selectedVehicleType"
+    textField="text"
+    valueField="value">
+    </kendo-dropdownlist>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 example-col">
+    <p>DropDownList</p>
+    <kendo-dropdownlist  [data]="ticketTypesMap"
+    [(ngModel)] = "selectedTicketType"
+    textField="text"
+    valueField="value">
+    </kendo-dropdownlist>
+  </div>
+
   <div class="alert alert-success" role="alert" *ngIf="successfulSave">
 
     You have registered successfully!

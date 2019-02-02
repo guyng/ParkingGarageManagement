@@ -8,4 +8,21 @@ export class CheckInData {
   }
   public personData: PersonData;
   public vehicleDimensionData: VehicleDimensionData;
+  public vehicleType: VehicleType;
+  public ticketType: TicketType;
 };
+
+export enum VehicleType {
+  Motorcycle,
+  Private,
+  Crossover,
+  SUV,
+  Van,
+  Truck
+}
+
+export enum TicketType {
+  Regular,
+  Value,
+  Vip
+}

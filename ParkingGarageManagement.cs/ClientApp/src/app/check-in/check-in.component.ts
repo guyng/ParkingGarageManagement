@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {CheckInData} from "../../shared/models/CheckInData.model";
+import {CheckInData,VehicleType, TicketType} from "../../shared/models/CheckInData.model";
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
@@ -7,12 +7,35 @@ import { HttpClient } from '@angular/common/http';
   selector: 'app-check-in-component',
   templateUrl: './check-in.component.html'
 })
+
 export class CheckInComponent implements OnInit  {
   private checkInData: CheckInData = new CheckInData();
   public checkInForm: FormGroup;
-
+  public vehicleTypesMap: Array<{text:string,value:number}> = [];
+  public ticketTypesMap: Array<{text:string,value:number}> = [];
+  public selectedVehicleType: {text:string,value:number};
+  public selectedTicketType: {text:string,value:number};
   constructor(private httpClient: HttpClient) {  }
+
+  //TODO: Move this method to a utils section
+  private convertEnumToObj(enumToConvert) : Array<{text:string,value:number}>
+  {
+    var resultObject = new Array<{text:string,value:number}>();
+    for (var item in enumToConvert) {
+      let itemIndex = parseInt(item);
+      if (!isNaN(itemIndex))
+      {
+        resultObject.push({text: enumToConvert[itemIndex], value : itemIndex});
+      }
+    }
+    return resultObject;
+  }
+
   ngOnInit(): void {
+    this.vehicleTypesMap = this.convertEnumToObj(VehicleType);
+    this.ticketTypesMap = this.convertEnumToObj(TicketType);
+    this.selectedVehicleType = this.vehicleTypesMap[0];
+    this.selectedTicketType = this.ticketTypesMap[0];
     this.checkInForm = new FormGroup({
       'name': new FormControl(this.checkInData.personData.name, [
         Validators.required,
@@ -29,6 +52,10 @@ export class CheckInComponent implements OnInit  {
   }
 
   public onSubmit(): void {
+    debugger;
+    this.checkInData.vehicleType = this.selectedVehicleType.value as VehicleType;
+    this.checkInData.ticketType = this.selectedTicketType.value as TicketType;
+    debugger;
     this.httpClient.post("api/Parking", this.checkInData).subscribe(result => {
  //       this.errors = [];
         debugger;
