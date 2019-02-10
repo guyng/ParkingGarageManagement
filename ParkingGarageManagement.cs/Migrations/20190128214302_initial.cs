@@ -27,7 +27,7 @@ namespace ParkingGarageManagement.cs.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
-                    PersonId = table.Column<int>(nullable: false)
+                    PersonTz = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

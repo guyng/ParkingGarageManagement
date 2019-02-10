@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ParkingGarageManagement.cs.Models;
-using ParkingGarageManagement.cs.Models.Entities;
 using ParkingGarageManagement.cs.Repositories;
 using ParkingGarageManagement.cs.Repositories.Abstract;
 

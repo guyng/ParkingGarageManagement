@@ -2,7 +2,7 @@
 
 
 
-  <!--<div class="alert alert-danger" role="alert" *ngIf="errors.length > 0">
+  <div class="alert alert-danger" role="alert" *ngIf="errors.length > 0">
 
     <ul>
 
@@ -14,10 +14,22 @@
 
     </ul>
 
-  </div>-->
+  </div>
+
+  <div class="alert alert-success" role="alert" *ngIf="checkinSuccess">
+
+    <ul>
+
+
+       The system has succesfully checked in your vehicle. Please wait..
+
+
+    </ul>
+
+  </div>
 
   <div class="col-xs-12 col-sm-6 example-col">
-    <p>DropDownList</p>
+    <p>Vehicle Type</p>
     <kendo-dropdownlist  [data]="vehicleTypesMap"
     [(ngModel)] = "selectedVehicleType"
     textField="text"
@@ -26,7 +38,7 @@
   </div>
 
   <div class="col-xs-12 col-sm-6 example-col">
-    <p>DropDownList</p>
+    <p>Ticket Type</p>
     <kendo-dropdownlist  [data]="ticketTypesMap"
     [(ngModel)] = "selectedTicketType"
     textField="text"
@@ -42,7 +54,7 @@
 
 
 
-  <form class="form-horizontal" [formGroup]="checkInForm" (ngSubmit)="onSubmit()">
+  <form class="form-horizontal" [formGroup]="checkInForm" (ngSubmit)="onSubmit()" >
 
     <h4 style ="text-align: center">Check in new vehicle</h4>
 
@@ -58,24 +70,22 @@
 
       <div class="col-md-4">
 
-        <input id="name" type="text" class="form-control" required formControlName="name" required [(ngModel)] = 'checkInData.personData.name'/>
+        <input type="text" id="name" class="form-control" formControlName="name" required [(ngModel)] = 'checkInData.personData.name'/>
 
       </div>
 
     </div>
 
-    <!--<div *ngIf="username.invalid && (username.dirty)"
+    <div *ngIf="name.invalid && (name.dirty)"
        class="alert alert-danger">
 
-
-
-    <div *ngIf="username.errors.required">
+    <div *ngIf="name.errors.required">
 
       Username is required.
 
     </div>
 
-    <div *ngIf="username.errors.minlength">
+    <div *ngIf="name.errors.minlength">
 
       Username must be at least 4 characters long.
 
@@ -83,15 +93,15 @@
 
 
 
-  </div>-->
+  </div>
 
     <div class="form-group">
 
-      <label class="col-md-2 control-label">Id</label>
+      <label class="col-md-2 control-label">Person Id</label>
 
       <div class="col-md-4">
 
-        <input type="text" name="id" class="form-control" required formControlName="personId" required [(ngModel)] = 'checkInData.personData.personId' />
+        <input type="text" name="id" class="form-control" formControlName="personId"  required [(ngModel)] = 'checkInData.personData.personId' />
 
       </div>
 
@@ -118,7 +128,7 @@
 
       <div class="col-md-4">
 
-        <input type="text" name="phone" class="form-control" formControlName="phone" required [(ngModel)] = 'checkInData.personData.phone'/>
+        <input type="text" class="form-control" formControlName="phone" required [(ngModel)] = 'checkInData.personData.phone'/>
 
       </div>
 
@@ -149,7 +159,7 @@
 
       <div class="col-md-4">
 
-        <input id="height" type="text" class="form-control" formControlName="height" required [(ngModel)] = 'checkInData.vehicleDimensionData.height' />
+        <input type="text" class="form-control" formControlName="height" required [(ngModel)] = 'checkInData.vehicleDimensionData.height' />
 
       </div>
 

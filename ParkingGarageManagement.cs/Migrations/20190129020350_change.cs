@@ -21,6 +21,8 @@ namespace ParkingGarageManagement.cs.Migrations
                 name: "Phone",
                 table: "Persons",
                 nullable: true);
+
+            migrationBuilder.RenameColumn("PersonId", "Persons", "PersonTz");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

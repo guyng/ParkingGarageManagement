@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ParkingGarageManagement.cs.Models.Domain;
-using ParkingGarageManagement.cs.Models.Entities;
 
 namespace ParkingGarageManagement.cs.Models
 {
@@ -17,10 +16,19 @@ namespace ParkingGarageManagement.cs.Models
 		public DbSet<VehicleType> VehicleTypes { get; set; }
 		public DbSet<Class> Classes { get; set; }
 		public DbSet<TicketClass> TicketClasses { get; set; }
+		public DbSet<TicketType> TicketTypes { get; set; }
+		public DbSet<LotRange> LotRanges { get; set; }
 
 		public GarageContext(DbContextOptions<GarageContext> options) : base(options)
 		{
 
+		}
+
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			builder.Entity<Person>(entity => {
+				entity.HasIndex(e => e.PersonTz).IsUnique();
+			});
 		}
 	}
 }

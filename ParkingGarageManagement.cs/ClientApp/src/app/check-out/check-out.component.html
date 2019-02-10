@@ -1,0 +1,10 @@
+Insert ID:
+<input type="text" id="id" class="form-control" (input) = "onIdChange($event.target.value)"/>
+Select Vehicle:
+<kendo-combobox ></kendo-combobox>
+<p>Select a date:</p>
+<kendo-datepicker [(value)]="value"></kendo-datepicker>
+<p>Select an hour:</p>
+<kendo-timepicker [(value)]="value"></kendo-timepicker>
+<br>
+<button kendoButton>Check Out</button>

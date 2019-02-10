@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParkingGarageManagement.cs.Models;
 
 namespace ParkingGarageManagement.cs.Migrations
 {
     [DbContext(typeof(GarageContext))]
-    partial class GarageContextModelSnapshot : ModelSnapshot
+    [Migration("20190205100627_lotrange")]
+    partial class lotrange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,27 +72,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.ToTable("LotRanges");
                 });
 
-            modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Person", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("PersonTz");
-
-                    b.Property<string>("Phone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonTz")
-                        .IsUnique()
-                        .HasFilter("[PersonTz] IS NOT NULL");
-
-                    b.ToTable("Persons");
-                });
-
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Ticket", b =>
                 {
                     b.Property<int>("Id")
@@ -107,13 +88,9 @@ namespace ParkingGarageManagement.cs.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("TicketTypeId");
-
                     b.Property<int>("TimeLimit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TicketTypeId");
 
                     b.ToTable("Tickets");
                 });
@@ -133,26 +110,11 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.ToTable("TicketClasses");
                 });
 
-            modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.TicketType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Type");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TicketTypes");
-                });
-
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("PersonId");
 
                     b.Property<int>("TicketId");
 
@@ -190,6 +152,23 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.ToTable("VehicleTypes");
                 });
 
+            modelBuilder.Entity("ParkingGarageManagement.cs.Models.Entities.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("PersonId");
+
+                    b.Property<string>("Phone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons");
+                });
+
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Lot", b =>
                 {
                     b.HasOne("ParkingGarageManagement.cs.Models.Domain.Vehicle", "Vehicle")
@@ -203,14 +182,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.HasOne("ParkingGarageManagement.cs.Models.Domain.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Ticket", b =>
-                {
-                    b.HasOne("ParkingGarageManagement.cs.Models.Domain.TicketType", "TicketType")
-                        .WithMany()
-                        .HasForeignKey("TicketTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
