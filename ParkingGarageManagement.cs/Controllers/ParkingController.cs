@@ -37,6 +37,30 @@ namespace ParkingGarageManagement.cs.Controllers
 			_peopleRepository = peopleRepository;
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> GetPersonVehicles(int personId)
+		{
+			try
+			{
+				var personVehicles = await _vehicleRepository.Query().Include(v => v.VehicleType).Where(v => v.PersonId == personId).ToListAsync();
+				if (personVehicles != null)
+				{
+					var vehicleIdTypes = new List<dynamic>();
+					foreach (var vehicle in personVehicles)
+					{
+							vehicleIdTypes.Add(new {VehicleId = vehicle.Id, VehicleType = vehicle.VehicleType.Name});
+					}
+					return Ok(vehicleIdTypes);
+				}
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+
+			return BadRequest();
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> CheckInVehicle([FromBody]CheckInData checkIn)
 		{
@@ -57,7 +81,7 @@ namespace ParkingGarageManagement.cs.Controllers
 					.Select(l => l.LotPosition).OrderByDescending(c => c).Take(1)
 					.FirstOrDefaultAsync();
 				var lotRange = await _lotRangeRepository.Query().SingleOrDefaultAsync(lr => lr.TicketId == ticket.Id);
-				if (!IsAvailableLot(ticket, lastLotNumber,lotRange?.MaxRange))
+				if (!IsAvailableLot(ticket, lastLotNumber, lotRange?.MaxRange))
 				{
 					return BadRequest("No available lot.");
 				}
@@ -78,12 +102,12 @@ namespace ParkingGarageManagement.cs.Controllers
 					person = MapPersonEntity(checkIn.PersonData);
 					await _peopleRepository.InsertAsync(person);
 				}
-				
+
 				var vehicle = await MapVehicleEntity(checkIn);
 				vehicle.PersonId = person.Id;
 				await _vehicleRepository.InsertAsync(vehicle);
 
-				int lotPosition =  lastLotNumber == 0 && lotRange != null ? lotRange.MinRange
+				int lotPosition = lastLotNumber == 0 && lotRange != null ? lotRange.MinRange
 								: lastLotNumber + 1;
 				Lot lot = new Lot
 				{
@@ -102,6 +126,29 @@ namespace ParkingGarageManagement.cs.Controllers
 
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> CheckOutVehicle([FromBody] CheckOutData checkOut)
+		{
+			var vehicle = await _vehicleRepository.Query().Include(v => v.Ticket)
+				.Include(t => t.Ticket.TicketType)
+				.SingleOrDefaultAsync
+				(v =>
+				v.PersonId == checkOut.PersonId && v.VehicleType.Name == checkOut.VehicleType.ToString());
+			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
+			var checkInOutHoursDiff = (checkOut.CheckOut - lot.CheckIn).TotalHours;
+			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;
+			var exceededTimeLimit =
+				notPermittedParkHours > 0 && vehicle.Ticket.TicketType.Type != TicketType.Vip;
+			if (exceededTimeLimit)
+			{
+				var priceToPay = notPermittedParkHours * vehicle.Ticket.Cost;
+				var result = new {AmountOfParkedHours = checkInOutHoursDiff, priceToPay};
+				return Ok(result);
+			}
+
+			return Ok(checkInOutHoursDiff);
+		}
+
 		//TODO: Add services, Use tasks everywhere, refactor the code.
 		private bool IsAvailableLot(Ticket ticket, int lastLotNumber, int? maxLotRange)
 		{
@@ -112,7 +159,7 @@ namespace ParkingGarageManagement.cs.Controllers
 		{
 			var resultVehicle = new Vehicle
 			{
-				Ticket = _ticketRepository.Query().SingleOrDefault(c => c.Name == checkInData.TicketType.ToString()),
+				Ticket = await _ticketRepository.Query().SingleOrDefaultAsync(c => c.Name == checkInData.TicketType.ToString()),
 				VehicleHeight = checkInData.VehicleDimensionData.Height.GetValueOrDefault(),
 				VehicleWidth = checkInData.VehicleDimensionData.Width.GetValueOrDefault(),
 				VehicleLength = checkInData.VehicleDimensionData.Length.GetValueOrDefault(),

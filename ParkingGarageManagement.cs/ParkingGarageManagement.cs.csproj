@@ -32,10 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\shared\models\PersonData.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\shared\models\VehicleDimensionData.model.ts" />
   </ItemGroup>

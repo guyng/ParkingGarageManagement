@@ -8,9 +8,11 @@ import { HttpClient, HttpParams } from "@angular/common/http";
   })
 
 export class CheckOutComponent implements OnInit  {
-    public value: Date = new Date();
+    public checkoutDate: Date = new Date();
+    public checkoutHour: Date = new Date();
     public vehicleList:any[] = [];
     private bouncer : NodeJS.Timer;
+    public loadingVehicleList:Boolean = false;
     /**
      *
      */
@@ -23,6 +25,7 @@ export class CheckOutComponent implements OnInit  {
 
     public onIdChange(id: string): void{
         var self = this;
+        this.loadingVehicleList = true;
         if (this.bouncer)
         {
             clearTimeout(this.bouncer);
@@ -30,8 +33,10 @@ export class CheckOutComponent implements OnInit  {
         this.bouncer = setTimeout(() => {
             let params = new HttpParams();
             params = params.append('personId', id);         
-            this.http.get<any[]>('api/Parking/GetPersonVehicles',{params:params}).subscribe(result => {
+            this.http.get<any[]>('api/Parking',{params:params}).subscribe(result => {
+                debugger;
                 this.vehicleList = result;
+                this.loadingVehicleList = false;
             }, error => 
             {
                 console.log(error);

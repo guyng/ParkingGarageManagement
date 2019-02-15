@@ -1,7 +1,8 @@
 Insert ID:
 <input type="text" id="id" class="form-control" (input) = "onIdChange($event.target.value)"/>
 Select Vehicle:
-<kendo-combobox ></kendo-combobox>
+<kendo-combobox [data] = vehicleList [textField]="'vehicleType'" [valueField]="'vehicleId'"></kendo-combobox>
+<mat-spinner *ngIf = loadingVehicleList></mat-spinner>
 <p>Select a date:</p>
 <kendo-datepicker [(value)]="value"></kendo-datepicker>
 <p>Select an hour:</p>

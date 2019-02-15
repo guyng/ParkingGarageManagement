@@ -15,6 +15,7 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { CheckOutComponent } from './check-out/check-out.component';
 import { IntlModule } from '@progress/kendo-angular-intl';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
+import { MatProgressBarModule, MatProgressSpinnerModule } from '@angular/material';
 
 
 
@@ -34,6 +35,7 @@ import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
     ReactiveFormsModule,
     DropDownsModule,
     IntlModule,
+    MatProgressSpinnerModule,
     DateInputsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
