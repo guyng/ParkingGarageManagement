@@ -38,20 +38,24 @@ namespace ParkingGarageManagement.cs.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetPersonVehicles(int personId)
+		public async Task<IActionResult> GetPersonVehicles(string personTz)
 		{
 			try
 			{
-				var personVehicles = await _vehicleRepository.Query().Include(v => v.VehicleType).Where(v => v.PersonId == personId).ToListAsync();
-				if (personVehicles != null)
+				var person = await _peopleRepository.Query().SingleOrDefaultAsync(p => p.PersonTz == personTz);
+				if (person != null)
 				{
-					var vehicleIdTypes = new List<dynamic>();
-					foreach (var vehicle in personVehicles)
+					var personVehicles = await _vehicleRepository.Query().Include(v => v.VehicleType).Where(v => v.PersonId == person.Id).ToListAsync();
+					if (personVehicles != null)
 					{
-							vehicleIdTypes.Add(new {VehicleId = vehicle.Id, VehicleType = vehicle.VehicleType.Name});
+						var vehicleIdTypes = new List<dynamic>();
+						foreach (var vehicle in personVehicles)
+						{
+							vehicleIdTypes.Add(new { VehicleId = vehicle.Id, VehicleType = vehicle.VehicleType.Name });
+						}
+						return Ok(vehicleIdTypes);
 					}
-					return Ok(vehicleIdTypes);
-				}
+				}			
 			}
 			catch (Exception ex)
 			{
@@ -72,7 +76,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			try
 			{
 				var dimensionData = checkIn.VehicleDimensionData;
-				var ticket = _ticketRepository.Query().Include(t => t.TicketType).SingleOrDefault(c => c.Name == checkIn.TicketType.ToString());
+				var ticket = await _ticketRepository.Query().Include(t => t.TicketType).SingleOrDefaultAsync(c => c.Name == checkIn.TicketType.ToString());
 				if (ticket == null)
 				{
 					return BadRequest();

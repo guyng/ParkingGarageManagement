@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParkingGarageManagement.cs.Models;
 
 namespace ParkingGarageManagement.cs.Migrations
 {
     [DbContext(typeof(GarageContext))]
-    partial class GarageContextModelSnapshot : ModelSnapshot
+    [Migration("20190215225545_tickets_seed_fix")]
+    partial class tickets_seed_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,23 +32,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Classes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "A"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "B"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "C"
-                        });
                 });
 
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Lot", b =>
@@ -106,29 +91,6 @@ namespace ParkingGarageManagement.cs.Migrations
                         .HasFilter("[PersonTz] IS NOT NULL");
 
                     b.ToTable("Persons");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Guy",
-                            PersonTz = "302119282",
-                            Phone = "0504029472"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Duy",
-                            PersonTz = "304119282",
-                            Phone = "0504529472"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Ruy",
-                            PersonTz = "307119282",
-                            Phone = "0504929472"
-                        });
                 });
 
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Ticket", b =>
@@ -263,38 +225,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.HasIndex("VehicleTypeId");
 
                     b.ToTable("Vehicles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            PersonId = 1,
-                            TicketId = 1,
-                            VehicleHeight = 1800,
-                            VehicleLength = 1200,
-                            VehicleTypeId = 1,
-                            VehicleWidth = 1500
-                        },
-                        new
-                        {
-                            Id = 2,
-                            PersonId = 1,
-                            TicketId = 2,
-                            VehicleHeight = 2200,
-                            VehicleLength = 1200,
-                            VehicleTypeId = 2,
-                            VehicleWidth = 1500
-                        },
-                        new
-                        {
-                            Id = 3,
-                            PersonId = 1,
-                            TicketId = 3,
-                            VehicleHeight = 2600,
-                            VehicleLength = 1200,
-                            VehicleTypeId = 3,
-                            VehicleWidth = 1500
-                        });
                 });
 
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.VehicleType", b =>
@@ -312,44 +242,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.HasIndex("ClassId");
 
                     b.ToTable("VehicleTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ClassId = 1,
-                            Name = "Motorcycle"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ClassId = 1,
-                            Name = "Private"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ClassId = 1,
-                            Name = "Crossover"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ClassId = 2,
-                            Name = "SUV"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ClassId = 2,
-                            Name = "Van"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ClassId = 3,
-                            Name = "Truck"
-                        });
                 });
 
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Lot", b =>

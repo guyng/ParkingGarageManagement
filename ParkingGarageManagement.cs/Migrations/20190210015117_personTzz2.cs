@@ -6,7 +6,7 @@ namespace ParkingGarageManagement.cs.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-	        migrationBuilder.RenameColumn("PersonId", "Persons", "PersonTz");
+	//        migrationBuilder.RenameColumn("PersonId", "Persons", "PersonTz");
 		}
 
         protected override void Down(MigrationBuilder migrationBuilder)

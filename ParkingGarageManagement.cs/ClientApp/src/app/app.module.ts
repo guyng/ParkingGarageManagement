@@ -15,7 +15,8 @@ import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { CheckOutComponent } from './check-out/check-out.component';
 import { IntlModule } from '@progress/kendo-angular-intl';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
-import { MatProgressBarModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatProgressBarModule, MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
+import { ToastService } from 'src/shared/Services/toast.service';
 
 
 
@@ -34,6 +35,7 @@ import { MatProgressBarModule, MatProgressSpinnerModule } from '@angular/materia
     FormsModule,
     ReactiveFormsModule,
     DropDownsModule,
+    MatSnackBarModule,
     IntlModule,
     MatProgressSpinnerModule,
     DateInputsModule,
@@ -46,7 +48,7 @@ import { MatProgressBarModule, MatProgressSpinnerModule } from '@angular/materia
     InputsModule,
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [ToastService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

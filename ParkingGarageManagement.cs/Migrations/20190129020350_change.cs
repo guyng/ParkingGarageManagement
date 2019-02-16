@@ -12,7 +12,7 @@ namespace ParkingGarageManagement.cs.Migrations
                 nullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "PersonId",
+                name: "PersonTz",
                 table: "Persons",
                 nullable: true,
                 oldClrType: typeof(int));
@@ -22,7 +22,7 @@ namespace ParkingGarageManagement.cs.Migrations
                 table: "Persons",
                 nullable: true);
 
-            migrationBuilder.RenameColumn("PersonId", "Persons", "PersonTz");
+         //   migrationBuilder.RenameColumn("PersonId", "Persons", "PersonTz");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

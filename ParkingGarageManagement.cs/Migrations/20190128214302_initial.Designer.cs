@@ -104,7 +104,7 @@ namespace ParkingGarageManagement.cs.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("PersonId");
+                    b.Property<int>("PersonTz");
 
                     b.HasKey("Id");
 
