@@ -37,6 +37,21 @@ namespace ParkingGarageManagement.cs.Controllers
 			_peopleRepository = peopleRepository;
 		}
 
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetPersonIds(string inputPersonTz)
+		{
+			try
+			{
+				var peopleTz = await _peopleRepository.Query().Where(p => p.PersonTz.StartsWith(inputPersonTz)).Select(p => p.PersonTz)
+					.ToListAsync();
+				return Ok(peopleTz);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
 		[HttpGet]
 		public async Task<IActionResult> GetPersonVehicles(string personTz)
 		{
@@ -136,8 +151,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			var vehicle = await _vehicleRepository.Query().Include(v => v.Ticket)
 				.Include(t => t.Ticket.TicketType)
 				.SingleOrDefaultAsync
-				(v =>
-				v.PersonId == checkOut.PersonId && v.VehicleType.Name == checkOut.VehicleType.ToString());
+				(v => v.Id == checkOut.VehicleId);
 			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
 			var checkInOutHoursDiff = (checkOut.CheckOut - lot.CheckIn).TotalHours;
 			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;

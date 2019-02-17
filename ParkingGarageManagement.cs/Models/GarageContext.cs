@@ -196,14 +196,6 @@ namespace ParkingGarageManagement.cs.Models
 					Id = 1,
 					//TODO: Finish lot data seed.
 
-				},
-				new Lot()
-				{
-
-				},
-				new Lot()
-				{
-
 				});
 
 			builder.Entity<Ticket>().HasData(

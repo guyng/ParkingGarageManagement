@@ -8,8 +8,7 @@ namespace ParkingGarageManagement.cs.Models.DTO
 {
 	public class CheckOutData
 	{
-		public int PersonId { get; set; }
-		public VehicleType VehicleType { get; set; }
+		public int VehicleId { get; set; }
 		public DateTime CheckOut { get; set; }
 	}
 }
