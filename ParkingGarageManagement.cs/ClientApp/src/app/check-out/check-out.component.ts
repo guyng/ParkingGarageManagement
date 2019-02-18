@@ -2,6 +2,7 @@ import { OnInit, Component } from "@angular/core";
 import { getLocaleDateTimeFormat } from "@angular/common";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { ToastService } from "src/shared/Services/toast.service";
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-check-out-component',
@@ -20,7 +21,7 @@ export class CheckOutComponent implements OnInit  {
     /**
      *
      */
-    constructor(private http: HttpClient,private toast: ToastService) {
+    constructor(private http: HttpClient,private toast: ToastService,private datePipe: DatePipe) {
         
     }
     ngOnInit(): void {
@@ -107,8 +108,11 @@ export class CheckOutComponent implements OnInit  {
     }
 
     public CheckOut():void{
-
-        this.http.post('api/Parking',{VehicleId: this.chosenVehicleId, PersonId: this.chosenPersonId}).subscribe(result => {
+        var dateWithoutTime = this.datePipe.transform(this.checkoutDate,"yyyy-MM-dd");
+        var Time = this.datePipe.transform(this.checkoutHour,"hh:mm:ss");
+        var completeDate = new Date(dateWithoutTime + " " + Time);
+        debugger;
+        this.http.post('api/Parking/CheckOutVehicle',{VehicleId: this.chosenVehicleId, Checkout: completeDate}).subscribe(result => {
     });
 }
 }

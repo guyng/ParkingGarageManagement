@@ -17,6 +17,7 @@ import { IntlModule } from '@progress/kendo-angular-intl';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
 import { MatProgressBarModule, MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
 import { ToastService } from 'src/shared/Services/toast.service';
+import { DatePipe } from '@angular/common';
 
 
 
@@ -48,7 +49,7 @@ import { ToastService } from 'src/shared/Services/toast.service';
     InputsModule,
     BrowserAnimationsModule
   ],
-  providers: [ToastService],
+  providers: [ToastService,DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

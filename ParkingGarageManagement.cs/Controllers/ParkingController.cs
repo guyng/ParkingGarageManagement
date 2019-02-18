@@ -145,7 +145,7 @@ namespace ParkingGarageManagement.cs.Controllers
 
 		}
 
-		[HttpPost]
+		[HttpPost("[action]")]
 		public async Task<IActionResult> CheckOutVehicle([FromBody] CheckOutData checkOut)
 		{
 			var vehicle = await _vehicleRepository.Query().Include(v => v.Ticket)
@@ -153,7 +153,7 @@ namespace ParkingGarageManagement.cs.Controllers
 				.SingleOrDefaultAsync
 				(v => v.Id == checkOut.VehicleId);
 			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
-			var checkInOutHoursDiff = (checkOut.CheckOut - lot.CheckIn).TotalHours;
+			var checkInOutHoursDiff = (checkOut.Checkout - lot.CheckIn).TotalHours;
 			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;
 			var exceededTimeLimit =
 				notPermittedParkHours > 0 && vehicle.Ticket.TicketType.Type != TicketType.Vip;

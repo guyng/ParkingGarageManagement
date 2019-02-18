@@ -6,8 +6,8 @@ Select Vehicle:
 <kendo-combobox [data] = vehicleList [textField]="'vehicleType'" [valueField]="'vehicleId'" (selectionChange)="selectVehicle($event)"></kendo-combobox>
 <mat-spinner *ngIf = loadingVehicleList></mat-spinner>
 <p>Select a date:</p>
-<kendo-datepicker [(value)]="value"></kendo-datepicker>
+<kendo-datepicker [(value)]="checkoutDate"></kendo-datepicker>
 <p>Select an hour:</p>
-<kendo-timepicker [(value)]="value"></kendo-timepicker>
+<kendo-timepicker [(value)]="checkoutHour"></kendo-timepicker>
 <br>
 <button kendoButton (click) = "CheckOut()">Check Out</button>
