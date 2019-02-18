@@ -131,7 +131,7 @@ namespace ParkingGarageManagement.cs.Controllers
 				Lot lot = new Lot
 				{
 					Vehicle = vehicle,
-					CheckIn = DateTime.Now,
+					CheckIn = DateTime.UtcNow,
 					LotPosition = lotPosition
 				};
 				await _lotRepository.InsertAsync(lot);
@@ -153,6 +153,10 @@ namespace ParkingGarageManagement.cs.Controllers
 				.SingleOrDefaultAsync
 				(v => v.Id == checkOut.VehicleId);
 			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
+			if (lot == null)
+			{
+				return BadRequest();
+			}
 			var checkInOutHoursDiff = (checkOut.Checkout - lot.CheckIn).TotalHours;
 			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;
 			var exceededTimeLimit =
