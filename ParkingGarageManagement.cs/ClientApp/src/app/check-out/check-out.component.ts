@@ -109,10 +109,24 @@ export class CheckOutComponent implements OnInit  {
 
     public CheckOut():void{
         var dateWithoutTime = this.datePipe.transform(this.checkoutDate,"yyyy-MM-dd");
-        var Time = this.datePipe.transform(this.checkoutHour,"hh:mm:ss");
+        var Time = this.datePipe.transform(this.checkoutHour,"HH:mm:ss");
         var completeDate = new Date(dateWithoutTime + " " + Time);
         debugger;
-        this.http.post('api/Parking/CheckOutVehicle',{VehicleId: this.chosenVehicleId, Checkout: completeDate}).subscribe(result => {
+        this.http.post('api/Parking/CheckOutVehicle',{VehicleId: this.chosenVehicleId, Checkout: completeDate}).subscribe((result:any) => {
+            let amountOfParkedHoursMsg = `You've parked your car for estimated time of ${Math.round(result)} Hours, ${Math.round(result*60)} Minutes,
+            ${Math.round((result * 60) * 100 % 60)} Seconds.`
+            if (result.priceToPay)
+            {
+                this.toast.Show(amountOfParkedHoursMsg,null,3000);
+                this.toast.Show(amountOfParkedHoursMsg,null,3000);
+            }
+            else{
+                this.toast.Show("You've checked out in time.");
+          //      this.toast.Show(amountOfParkedHoursMsg,null,3000);
+            }
+            debugger;
+    },err => {
+        console.log(err);
     });
 }
 }
