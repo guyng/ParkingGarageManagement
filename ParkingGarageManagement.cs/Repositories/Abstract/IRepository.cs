@@ -14,5 +14,7 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 		Task InsertAsync(T entity);
 
 		Task UpdateAsync(T entity);
+
+		Task RemoveAsync(T entity);
 	}
 }

@@ -30,6 +30,7 @@
     "@progress/kendo-angular-inputs": "^4.0.0",
     "@progress/kendo-angular-intl": "^1.6.1",
     "@progress/kendo-angular-l10n": "^1.1.0",
+    "@progress/kendo-angular-notification": "^1.2.0",
     "@progress/kendo-theme-default": "latest",
     "angular-material": "^1.1.12",
     "aspnet-prerendering": "^3.0.1",

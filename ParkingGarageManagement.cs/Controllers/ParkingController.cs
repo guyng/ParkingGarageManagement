@@ -53,14 +53,19 @@ namespace ParkingGarageManagement.cs.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetPersonVehicles(string personTz)
+		public async Task<IActionResult> GetPersonCheckedInVehicles(string personTz)
 		{
 			try
 			{
 				var person = await _peopleRepository.Query().SingleOrDefaultAsync(p => p.PersonTz == personTz);
 				if (person != null)
 				{
-					var personVehicles = await _vehicleRepository.Query().Include(v => v.VehicleType).Where(v => v.PersonId == person.Id).ToListAsync();
+					var lots = await _lotRepository.Query().ToListAsync();
+					var personVehicles = await _vehicleRepository.Query()
+						.Include(v => v.VehicleType)
+						.Where(v => v.PersonId == person.Id)
+						.Join(lots,v => v.Id, l=> l.VehicleId, (v,l) => v)
+						.ToListAsync();
 					if (personVehicles != null)
 					{
 						var vehicleIdTypes = new List<dynamic>();
@@ -155,7 +160,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
 			if (lot == null)
 			{
-				return BadRequest();
+				return NotFound();
 			}
 			var checkInOutHoursDiff = (checkOut.Checkout - lot.CheckIn).TotalHours;
 			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;
@@ -168,6 +173,7 @@ namespace ParkingGarageManagement.cs.Controllers
 				return Ok(result);
 			}
 
+			await _vehicleRepository.RemoveAsync(vehicle);
 			return Ok(checkInOutHoursDiff);
 		}
 

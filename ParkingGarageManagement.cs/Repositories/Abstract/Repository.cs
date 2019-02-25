@@ -46,5 +46,11 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 			GarageContext.Entry(entity).State = EntityState.Modified;
 			await GarageContext.SaveChangesAsync();
 		}
+
+		public async Task RemoveAsync(T entity)
+		{
+			GarageContext.Remove(entity);
+			await GarageContext.SaveChangesAsync();
+		}
 	}
 }

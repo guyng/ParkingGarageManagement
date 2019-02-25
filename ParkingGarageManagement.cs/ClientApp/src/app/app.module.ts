@@ -16,8 +16,9 @@ import { CheckOutComponent } from './check-out/check-out.component';
 import { IntlModule } from '@progress/kendo-angular-intl';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
 import { MatProgressBarModule, MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
-import { ToastService } from 'src/shared/Services/toast.service';
 import { DatePipe } from '@angular/common';
+import { NotificationModule } from '@progress/kendo-angular-notification';
+import { ToastService } from '../shared/Services/toast.service';
 
 
 
@@ -33,6 +34,7 @@ import { DatePipe } from '@angular/common';
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
+    NotificationModule,
     FormsModule,
     ReactiveFormsModule,
     DropDownsModule,
@@ -49,7 +51,8 @@ import { DatePipe } from '@angular/common';
     InputsModule,
     BrowserAnimationsModule
   ],
-  providers: [ToastService,DatePipe],
+  providers: [DatePipe,ToastService],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
