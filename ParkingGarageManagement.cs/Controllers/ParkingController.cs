@@ -85,6 +85,18 @@ namespace ParkingGarageManagement.cs.Controllers
 			return BadRequest();
 		}
 
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetListOfLateParkingPeople(DateTime inputDate)
+		{
+			var listOfPeople = await _peopleRepository.FromSql("FindLateToPickupPeople", new {inputDate});
+			if (listOfPeople != null)
+			{
+				return Ok(listOfPeople);
+			}
+
+			return NotFound();
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> CheckInVehicle([FromBody]CheckInData checkIn)
 		{
@@ -174,7 +186,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			}
 
 			await _vehicleRepository.RemoveAsync(vehicle);
-			return Ok(checkInOutHoursDiff);
+			return Ok(new {AmountOfParkedHours = checkInOutHoursDiff});
 		}
 
 		//TODO: Add services, Use tasks everywhere, refactor the code.

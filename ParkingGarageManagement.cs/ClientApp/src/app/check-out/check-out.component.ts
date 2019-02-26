@@ -112,10 +112,11 @@ export class CheckOutComponent implements OnInit {
         let vehicleId = this.chosenVehicleId;
         debugger;
         this.http.post('api/Parking/CheckOutVehicle', { VehicleId: vehicleId, Checkout: completeDate }).subscribe((result: any) => {
-            let amountOfParkedHoursMsg = `You've parked your car for estimated time of ${Math.round(result/ 24) } days ${Math.round(result) % 24} Hours.`
+            let amountOfParkedHoursMsg = `You've parked your car for estimated time of ${Math.round(result.amountOfParkedHours/ 24) } days ` + 
+            `${Math.round(result.amountOfParkedHours) % 24} Hours.`
             if (result.priceToPay) {
                 this.toast.Show(amountOfParkedHoursMsg, null, 3000);
-                this.toast.Show(`You must pay additional ${result.priceToPay} in order to checkout.`, null, 3000);
+                this.toast.Show(`You must pay additional ${Math.round(result.priceToPay)} in order to checkout.`, null, 3000);
             }
             else {
                 this.toast.Show("You've checked out in time.",null,3000);

@@ -16,5 +16,7 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 		Task UpdateAsync(T entity);
 
 		Task RemoveAsync(T entity);
+
+		Task<List<T>> FromSql(string sqlQuery, object param);
 	}
 }
