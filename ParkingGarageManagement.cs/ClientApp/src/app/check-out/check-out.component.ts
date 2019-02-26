@@ -25,48 +25,7 @@ export class CheckOutComponent implements OnInit {
 
     }
     ngOnInit(): void {
-        //    throw new Error("Method not implemented.");
     }
-
-    // public onIdChange(id: string): void{
-    //     if (!id)
-    //     {
-    //         return;
-    //     }
-    //     var self = this;
-    //     this.loadingVehicleList = true;
-    //     if (this.bouncer)
-    //     {
-    //         clearTimeout(this.bouncer);
-    //     }
-    //     this.bouncer = setTimeout(() => {
-    //         // let params = new HttpParams();
-    //         // params = params.append('personTz', id);
-
-    //         // this.http.get<any[]>('api/Parking/GetPersonIds',{params:params}).subscribe(result => {
-    //         //     this.personTzList = result;
-    //         // });
-
-    //         this.http.get<any[]>('api/Parking',{params:params}).subscribe(result => {
-    //             debugger;
-    //             this.vehicleList = result;
-    //             this.loadingVehicleList = false;
-    //             if (result && result.length > 0)
-    //             {
-    //                 this.toast.Show(`${result.length} Vehicles have been found`);
-    //             }
-    //             else{
-    //                 this.toast.Show('No Vehicles have been found');
-    //             }
-    //         }, error => 
-    //         {
-    //             console.log(error);
-    //             this.loadingVehicleList = false;
-    //             this.toast.Show('No Vehicles have been found');
-    //         });
-    //     }, 2000);
-    //     console.log(id);
-    // }
 
     public fetchPeople(value): void {
         debugger;
@@ -76,7 +35,6 @@ export class CheckOutComponent implements OnInit {
         this.http.get<any[]>('api/Parking/GetPersonIds', { params: params }).subscribe(result => {
             this.personTzList = result;
         });
-
     }
 
     public selectVehicle(value): void {
