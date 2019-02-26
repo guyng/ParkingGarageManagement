@@ -11,17 +11,16 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 {
 	public class Repository<T> : IRepository<T> where T : class
 	{
-		protected readonly DbSet<T> RepositoryDbSet;
+		public DbSet<T> Table { get; set; }
 		private readonly DbContext GarageContext;
 		public Repository(GarageContext garageContext)
 		{
 			GarageContext = garageContext;
-			RepositoryDbSet = garageContext.Set<T>();
 		}
 
 		public IQueryable<T> Query()
 		{
-			return RepositoryDbSet.AsQueryable();
+			return Table.AsQueryable();
 		}
 
 		public async Task<T> GetAsync(int id)
@@ -33,7 +32,7 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 		{
 			try
 			{
-				await RepositoryDbSet.AddAsync(entity);
+				await Table.AddAsync(entity);
 				await GarageContext.SaveChangesAsync();
 			}
 			catch (Exception ex)
@@ -61,7 +60,7 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 			try
 			{
 				object[] sqlParams = generateSqlParameters(param, ref sqlQuery);
-				result = await RepositoryDbSet.FromSql(sqlQuery, sqlParams).ToListAsync();
+				result = await Table.FromSql(sqlQuery, sqlParams).ToListAsync();
 			}
 			catch(Exception ex)
 			{
@@ -70,6 +69,7 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 
 			return result;
 		}
+
 
 		private object[] generateSqlParameters(object param,ref string sqlQuery)
 		{

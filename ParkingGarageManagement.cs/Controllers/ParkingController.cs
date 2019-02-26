@@ -11,6 +11,7 @@ using ParkingGarageManagement.cs.Models.Domain;
 using ParkingGarageManagement.cs.Models.DTO;
 using ParkingGarageManagement.cs.Repositories.Abstract;
 using ParkingGarageManagement.cs.Validators;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using TicketType = ParkingGarageManagement.cs.Infrastructure.Enums.TicketType;
 
 namespace ParkingGarageManagement.cs.Controllers
@@ -95,6 +96,17 @@ namespace ParkingGarageManagement.cs.Controllers
 			}
 
 			return NotFound();
+		}
+
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetParkLotState()
+		{
+			var result = await (from lot in _lotRepository.Table
+				join vehicle in _vehicleRepository.Table
+					on lot.VehicleId equals vehicle.Id
+				select new {VehicleId = vehicle.Id, VehicleType = vehicle.VehicleType.Name,
+					lot.LotPosition}).ToListAsync();
+			return Ok(result);
 		}
 
 		[HttpPost]
