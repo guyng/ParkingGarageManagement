@@ -11,6 +11,7 @@ using ParkingGarageManagement.cs.Models.Domain;
 using ParkingGarageManagement.cs.Models.DTO;
 using ParkingGarageManagement.cs.Repositories.Abstract;
 using ParkingGarageManagement.cs.Validators;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using TicketType = ParkingGarageManagement.cs.Infrastructure.Enums.TicketType;
 
 namespace ParkingGarageManagement.cs.Controllers
@@ -53,14 +54,19 @@ namespace ParkingGarageManagement.cs.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetPersonVehicles(string personTz)
+		public async Task<IActionResult> GetPersonCheckedInVehicles(string personTz)
 		{
 			try
 			{
 				var person = await _peopleRepository.Query().SingleOrDefaultAsync(p => p.PersonTz == personTz);
 				if (person != null)
 				{
-					var personVehicles = await _vehicleRepository.Query().Include(v => v.VehicleType).Where(v => v.PersonId == person.Id).ToListAsync();
+					var lots = await _lotRepository.Query().ToListAsync();
+					var personVehicles = await _vehicleRepository.Query()
+						.Include(v => v.VehicleType)
+						.Where(v => v.PersonId == person.Id)
+						.Join(lots,v => v.Id, l=> l.VehicleId, (v,l) => v)
+						.ToListAsync();
 					if (personVehicles != null)
 					{
 						var vehicleIdTypes = new List<dynamic>();
@@ -78,6 +84,29 @@ namespace ParkingGarageManagement.cs.Controllers
 			}
 
 			return BadRequest();
+		}
+
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetListOfLateParkingPeople(DateTime inputDate)
+		{
+			var listOfPeople = await _peopleRepository.FromSql("FindLateToPickupPeople", new {inputDate});
+			if (listOfPeople != null)
+			{
+				return Ok(listOfPeople);
+			}
+
+			return NotFound();
+		}
+
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetParkLotState()
+		{
+			var result = await (from lot in _lotRepository.Table
+				join vehicle in _vehicleRepository.Table
+					on lot.VehicleId equals vehicle.Id
+				select new {VehicleId = vehicle.Id, VehicleType = vehicle.VehicleType.Name,
+					lot.LotPosition}).ToListAsync();
+			return Ok(result);
 		}
 
 		[HttpPost]
@@ -155,7 +184,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
 			if (lot == null)
 			{
-				return BadRequest();
+				return NotFound();
 			}
 			var checkInOutHoursDiff = (checkOut.Checkout - lot.CheckIn).TotalHours;
 			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;
@@ -168,7 +197,8 @@ namespace ParkingGarageManagement.cs.Controllers
 				return Ok(result);
 			}
 
-			return Ok(checkInOutHoursDiff);
+			await _vehicleRepository.RemoveAsync(vehicle);
+			return Ok(new {AmountOfParkedHours = checkInOutHoursDiff});
 		}
 
 		//TODO: Add services, Use tasks everywhere, refactor the code.

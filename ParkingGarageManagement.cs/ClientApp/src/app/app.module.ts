@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { CheckInComponent } from './check-in/check-in.component';
 import { InputsModule } from '@progress/kendo-angular-inputs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,8 +15,10 @@ import { CheckOutComponent } from './check-out/check-out.component';
 import { IntlModule } from '@progress/kendo-angular-intl';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
 import { MatProgressBarModule, MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
-import { ToastService } from 'src/shared/Services/toast.service';
 import { DatePipe } from '@angular/common';
+import { NotificationModule } from '@progress/kendo-angular-notification';
+import { ToastService } from '../shared/Services/toast.service';
+import { GarageStateComponent } from './garage-state/garage-state.component';
 
 
 
@@ -27,12 +28,13 @@ import { DatePipe } from '@angular/common';
     NavMenuComponent,
     HomeComponent,
     CheckInComponent,
-    FetchDataComponent,
+    GarageStateComponent,
     CheckOutComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
+    NotificationModule,
     FormsModule,
     ReactiveFormsModule,
     DropDownsModule,
@@ -44,12 +46,13 @@ import { DatePipe } from '@angular/common';
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'check-in', component: CheckInComponent },
       { path: 'check-out', component: CheckOutComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'garage-state', component: GarageStateComponent },
     ]),
     InputsModule,
     BrowserAnimationsModule
   ],
-  providers: [ToastService,DatePipe],
+  providers: [DatePipe,ToastService],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
