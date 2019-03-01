@@ -3,3 +3,4 @@
 ################################################################################
 
 /.vs/ParkingGarageManagement.cs/v15/Server/sqlite3
+/ParkingGarageManagement.cs/ClientApp/src/shared/models/CheckoutData.model.ts
