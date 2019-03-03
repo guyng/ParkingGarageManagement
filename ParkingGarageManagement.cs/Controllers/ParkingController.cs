@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using ParkingGarageManagement.cs.Infrastructure.Managers.TPL;
 using ParkingGarageManagement.cs.Models;
 using ParkingGarageManagement.cs.Models.Domain;
 using ParkingGarageManagement.cs.Models.DTO;
@@ -28,11 +31,12 @@ namespace ParkingGarageManagement.cs.Controllers
 		private readonly IRepository<Ticket> _ticketRepository;
 		private readonly IRepository<Person> _peopleRepository;
 		private readonly DbContextOptions<GarageContext> _options;
+		private readonly IExecutor _executor;
 
 		public ParkingController(IRepository<Vehicle> vehicleRepository,
 			IRepository<VehicleType> vehicleTypeRepository, IRepository<Ticket> ticketRepository,
 			IRepository<Lot> lotRepository, IRepository<LotRange> lotRangeRepository, IRepository<Person> peopleRepository,
-			DbContextOptions<GarageContext> options)
+			DbContextOptions<GarageContext> options, IExecutor executor)
 		{
 			_vehicleRepository = vehicleRepository;
 			_vehicleTypeRepository = vehicleTypeRepository;
@@ -41,6 +45,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			_lotRangeRepository = lotRangeRepository;
 			_peopleRepository = peopleRepository;
 			_options = options;
+			_executor = executor;
 		}
 
 		[HttpGet("[action]")]
@@ -205,95 +210,196 @@ namespace ParkingGarageManagement.cs.Controllers
 		}
 
 
+		//[HttpPost("[action]")]
+		//public async Task<IActionResult> CreateRandomVehicles([FromBody]int count = 10)
+		//{
+
+
+
+
+
+
+
+		////	var estimated = Stopwatch.StartNew();
+		////	var randomCreatedVehicles = await CreateVehicles(count);
+
+		//	//var elapsed1 = $"1 elapsed: {estimated.Elapsed}";
+		//	////double avgEstimated = 0;
+		//	////long sumEstimated = 0;
+		//	//estimated.Restart();
+		//	//List<Vehicle> forloopList = new List<Vehicle>();
+		//	//for (int i = 0; i < 30; i++)
+		//	//{
+		//	//	var randomCreatedVehicles = await CreateVehicles(count);
+		//	//	forloopList.AddRange(randomCreatedVehicles);
+		//	//}
+
+		//	//var elapsed10 = $"10 elapsed: {estimated.Elapsed}";
+		//	//estimated.Restart();
+
+		//	//List<Vehicle> forloopListTPL = new List<Vehicle>();
+		//	////await Task.Run(async() =>
+		//	////{
+		//	////	Parallel.For(0, 10, async d =>
+		//	////	{
+		//	////		var randomCreatedVehicles = await CreateVehicles(count, true);
+		//	////		forloopListTPL.AddRange(randomCreatedVehicles);
+		//	////	});
+		//	////	await Task.Delay(1);
+		//	////});
+
+		//	//List<Task> tasks = new List<Task>();
+		//	//for (int i = 0; i < 30; i++)
+		//	//{
+		//	//	tasks.Add(await Task.Factory.StartNew((async () =>
+		//	//	{
+		//	//		var randomCreatedVehicles = await CreateVehicles(count,true);
+		//	//		forloopListTPL.AddRange(randomCreatedVehicles);
+		//	//	})));
+		//	//}
+
+
+
+		//	//await Task.WhenAll(tasks);
+		//	//var elapsed10fortpl = $"10 elapsed for tpl: {estimated.Elapsed}";
+		//	//estimated.Stop();
+		//	//if (randomCreatedVehicles != null)
+		//	//{
+		//	//	return Ok(randomCreatedVehicles);
+		//	//}
+
+		//	var elapsedFor = Stopwatch.StartNew();
+		//	//for (int i = 0; i < 500; i++)
+		//	//{
+		//	//	await GetVehicles();
+		//	//}
+
+		//	//var elapsedForStr = $"for with await duration: {elapsedFor.Elapsed}";
+
+		//	var elapsedFor2 = Stopwatch.StartNew();
+		//	for (int i = 0; i < 500; i++)
+		//	{
+		//		await GetVehicles2();
+		//	}
+
+		//	var elapsedFor2Str = $"for2 with await duration: {elapsedFor2.Elapsed}";
+
+		//	List<Task> tasks = new List<Task>();
+		//	elapsedFor.Restart();
+		//	for (int i = 0; i < 500; i++)
+		//	{
+		//		tasks.Add(Task.Run(GetVehicles));
+		//	}
+		//	await Task.WhenAll(tasks);
+		//	var elapsedWhenAllStr = $"when all tasks duration: {elapsedFor.Elapsed}";
+
+
+		//	tasks.Clear();
+		//	elapsedFor.Restart();
+		//	for (int i = 0; i < 500; i++)
+		//	{
+		//		tasks.Add(_executor.ExecuteInParallel(async () =>
+		//		{
+
+		//			using (GarageContext dbContext = new GarageContext(_options))
+		//			{
+		//				await dbContext.Vehicles.ToListAsync();
+		//				await dbContext.Tickets.ToListAsync();
+		//				await dbContext.Classes.ToListAsync();
+		//				await dbContext.Persons.ToListAsync();
+		//				await dbContext.LotRanges.ToListAsync();
+		//			}
+		//		}));
+		//	}
+		//	await Task.WhenAll(tasks);
+		//	var elapsedWhenAllStr2 = $"when all2 tasks duration: {elapsedFor.Elapsed}";
+		//	return BadRequest();
+		//}
+
+		//private async Task GetVehicles()
+		//{
+		//	using (GarageContext dbContext = new GarageContext(_options))
+		//	{
+		//		await dbContext.Vehicles.ToListAsync();
+		//		await dbContext.Tickets.ToListAsync();
+		//		await dbContext.Classes.ToListAsync();
+		//		await dbContext.Persons.ToListAsync();
+		//		await dbContext.LotRanges.ToListAsync();
+		//	}
+		//}
+
+		//private async Task GetVehicles2()
+		//{
+		//	await _vehicleRepository.Query().ToListAsync();
+		//	await _lotRepository.Query().ToListAsync();
+		//	await _ticketRepository.Query().ToListAsync();
+		//	await _lotRangeRepository.Query().ToListAsync();
+		//	await _peopleRepository.Query().ToListAsync();
+		//}
+
 		[HttpPost("[action]")]
-		public async Task<IActionResult> CreateRandomVehicles([FromBody]int count = 10)
+		public async Task<IActionResult> CreateRandomVehicles([FromBody] int count = 10)
 		{
-		//	var estimated = Stopwatch.StartNew();
-			var randomCreatedVehicles = await CreateVehicles(count);
-			//var elapsed1 = $"1 elapsed: {estimated.Elapsed}";
-			////double avgEstimated = 0;
-			////long sumEstimated = 0;
-			//estimated.Restart();
-			//List<Vehicle> forloopList = new List<Vehicle>();
-			//for (int i = 0; i < 30; i++)
-			//{
-			//	var randomCreatedVehicles = await CreateVehicles(count);
-			//	forloopList.AddRange(randomCreatedVehicles);
-			//}
-
-			//var elapsed10 = $"10 elapsed: {estimated.Elapsed}";
-			//estimated.Restart();
-
-			//List<Vehicle> forloopListTPL = new List<Vehicle>();
-			////await Task.Run(async() =>
-			////{
-			////	Parallel.For(0, 10, async d =>
-			////	{
-			////		var randomCreatedVehicles = await CreateVehicles(count, true);
-			////		forloopListTPL.AddRange(randomCreatedVehicles);
-			////	});
-			////	await Task.Delay(1);
-			////});
-
-			//List<Task> tasks = new List<Task>();
-			//for (int i = 0; i < 30; i++)
-			//{
-			//	tasks.Add(await Task.Factory.StartNew((async () =>
-			//	{
-			//		var randomCreatedVehicles = await CreateVehicles(count,true);
-			//		forloopListTPL.AddRange(randomCreatedVehicles);
-			//	})));
-			//}
-
-			//await Task.WhenAll(tasks);
-			//var elapsed10fortpl = $"10 elapsed for tpl: {estimated.Elapsed}";
-			//estimated.Stop();
-			if (randomCreatedVehicles != null)
+			var createdVehicles = await CreateVehicles(count);
+			if (createdVehicles != null)
 			{
-				return Ok(randomCreatedVehicles);
+				return Ok(createdVehicles);
 			}
 
 			return BadRequest();
+
 		}
 
-		private async Task<List<Vehicle>> CreateVehicles(int count,bool parallelFor = false)
+		private async Task<List<Tuple<Vehicle,Lot>>> CreateVehicles(int count)
 		{
 			
-			List<Vehicle> result = new List<Vehicle>();
+			List<Tuple<Vehicle,Lot>> result = new List<Tuple<Vehicle, Lot>>();
 			while (count-- > 0)
 			{
-				Vehicle vehicle = new Vehicle();
-				if (parallelFor)
+				try
 				{
-					using (GarageContext dbContext = new GarageContext(_options))
+					Vehicle vehicle = new Vehicle
 					{
-						vehicle.Ticket = await  dbContext.Tickets.Skip(new Random()
-							.Next(0, dbContext.Tickets.Count(t => true))).Take(1).FirstAsync();
-						vehicle.PersonId = (await dbContext.Persons
+						TicketId = (await _ticketRepository.Query()
 							.Skip(new Random()
-								.Next(0, dbContext.Persons.Count(t => true))).Take(1).FirstAsync()).Id;
-						vehicle.VehicleType = await dbContext.VehicleTypes
+								.Next(0, _ticketRepository.Table.Count(t => true))).Take(1).FirstAsync()).Id,
+						PersonId = (await _peopleRepository.Query()
 							.Skip(new Random()
-								.Next(0, dbContext.VehicleTypes.Count(v => true))).Take(1).FirstAsync();
+								.Next(0, _peopleRepository.Table.Count(t => true))).Take(1).FirstAsync()).Id,
+						VehicleTypeId = (await _vehicleTypeRepository.Query()
+							.Skip(new Random()
+								.Next(0, _vehicleTypeRepository.Table.Count(v => true))).Take(1).FirstAsync()).Id
+					};
+					var ticket = await _ticketRepository.Query().SingleOrDefaultAsync(t => t.Id == vehicle.TicketId);
+					var lastLotNumber = await _lotRepository.Query().Where(l => l.Vehicle.Ticket == ticket)
+						.Select(l => l.LotPosition).OrderByDescending(c => c).Take(1)
+						.FirstOrDefaultAsync();
+					var lotRange = await _lotRangeRepository.Query()
+						.SingleOrDefaultAsync(lr => lr.TicketId == ticket.Id);
+					if (!IsAvailableLot(ticket, lastLotNumber, lotRange?.MaxRange))
+					{
+						continue;
 					}
+
+					vehicle.VehicleHeight = new Random().Next(-1, ticket?.MaxHeight ?? 2000);
+					vehicle.VehicleWidth = new Random().Next(-1, ticket?.MaxWidth ?? 2000);
+					vehicle.VehicleLength = new Random().Next(-1, ticket?.MaxLength ?? 2000);
+					await _vehicleRepository.InsertAsync(vehicle);
+
+					Lot lot = new Lot
+					{
+						VehicleId = vehicle.Id,
+						CheckIn = DateTime.Now,
+						LotPosition = lastLotNumber == 0 && lotRange != null ? lotRange.MinRange : lastLotNumber + 1
+					};
+					result.Add(Tuple.Create(vehicle, lot));
+					await _lotRepository.InsertAsync(lot);
 				}
-				else
+				catch (Exception ex)
 				{
-					vehicle.Ticket = await _ticketRepository.Query()
-						.Skip(new Random()
-							.Next(0, _ticketRepository.Table.Count(t => true))).Take(1).FirstAsync();
-					vehicle.PersonId = (await _peopleRepository.Query()
-						.Skip(new Random()
-							.Next(0, _peopleRepository.Table.Count(t => true))).Take(1).FirstAsync()).Id;
-					vehicle.VehicleType = await _vehicleTypeRepository.Query()
-						.Skip(new Random()
-							.Next(0, _vehicleTypeRepository.Table.Count(v => true))).Take(1).FirstAsync();
+					Console.WriteLine(ex.Message);
 				}
 				
-				vehicle.VehicleHeight = new Random().Next(0, 99999);
-				vehicle.VehicleWidth = new Random().Next(0, 99999);
-				vehicle.VehicleLength = new Random().Next(0, 99999);		
-				result.Add(vehicle);
 			}
 			return result;
 		}

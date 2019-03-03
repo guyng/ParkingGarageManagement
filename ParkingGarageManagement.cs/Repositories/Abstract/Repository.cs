@@ -9,10 +9,10 @@ using ParkingGarageManagement.cs.Models;
 
 namespace ParkingGarageManagement.cs.Repositories.Abstract
 {
-	public class Repository<T> : IRepository<T> where T : class
+	public class Repository<T> : IRepository<T>, IDisposable where T : class
 	{
 		public DbSet<T> Table { get; set; }
-		public DbContext _garageContext { get; set; }
+		private readonly DbContext _garageContext;
 		public Repository(GarageContext garageContext)
 		{
 			_garageContext = garageContext;
@@ -88,5 +88,14 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 
 			return sqlParams.ToArray();
 		}
+
+
+
+		public void Dispose()
+		{
+			_garageContext?.Dispose();
+		}
+
+
 	}
 }

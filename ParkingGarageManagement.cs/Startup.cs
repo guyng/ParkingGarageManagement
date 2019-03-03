@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ParkingGarageManagement.cs.Infrastructure.Managers.TPL;
 using ParkingGarageManagement.cs.Models;
 using ParkingGarageManagement.cs.Repositories;
 using ParkingGarageManagement.cs.Repositories.Abstract;
@@ -35,6 +36,7 @@ namespace ParkingGarageManagement.cs
 				options.UseSqlServer(Configuration.GetConnectionString("GarageDatabase")),ServiceLifetime.Transient);
 	//		services.AddScoped<IRepository<Person>, PeopleRepository>();
 			services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+			services.AddScoped<IExecutor, Executor>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -21,7 +21,5 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 		Task<List<T>> FromSql(string sqlQuery, object param);
 
 		DbSet<T> Table { get; set; }
-
-		DbContext _garageContext { get; set; }
 	}
 }
