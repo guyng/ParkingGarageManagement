@@ -12,10 +12,11 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 	public class Repository<T> : IRepository<T> where T : class
 	{
 		public DbSet<T> Table { get; set; }
-		private readonly DbContext GarageContext;
+		public DbContext _garageContext { get; set; }
 		public Repository(GarageContext garageContext)
 		{
-			GarageContext = garageContext;
+			_garageContext = garageContext;
+			Table = garageContext.Set<T>();
 		}
 
 		public IQueryable<T> Query()
@@ -23,9 +24,10 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 			return Table.AsQueryable();
 		}
 
+
 		public async Task<T> GetAsync(int id)
 		{
-			return await GarageContext.FindAsync<T>(id);
+			return await _garageContext.FindAsync<T>(id);
 		}
 
 		public async Task InsertAsync(T entity)
@@ -33,7 +35,7 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 			try
 			{
 				await Table.AddAsync(entity);
-				await GarageContext.SaveChangesAsync();
+				await _garageContext.SaveChangesAsync();
 			}
 			catch (Exception ex)
 			{
@@ -44,14 +46,14 @@ namespace ParkingGarageManagement.cs.Repositories.Abstract
 
 		public async Task UpdateAsync(T entity)
 		{
-			GarageContext.Entry(entity).State = EntityState.Modified;
-			await GarageContext.SaveChangesAsync();
+			_garageContext.Entry(entity).State = EntityState.Modified;
+			await _garageContext.SaveChangesAsync();
 		}
 
 		public async Task RemoveAsync(T entity)
 		{
-			GarageContext.Remove(entity);
-			await GarageContext.SaveChangesAsync();
+			_garageContext.Remove(entity);
+			await _garageContext.SaveChangesAsync();
 		}
 
 		public async Task<List<T>> FromSql(string sqlQuery,object param)

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ParkingGarageManagement.cs.Infrastructure.Enums;
 using ParkingGarageManagement.cs.Models.Domain;
+using VehicleType = ParkingGarageManagement.cs.Models.Domain.VehicleType;
 
 namespace ParkingGarageManagement.cs.Models
 {
@@ -16,7 +18,6 @@ namespace ParkingGarageManagement.cs.Models
 		public DbSet<VehicleType> VehicleTypes { get; set; }
 		public DbSet<Class> Classes { get; set; }
 		public DbSet<TicketClass> TicketClasses { get; set; }
-		public DbSet<TicketType> TicketTypes { get; set; }
 		public DbSet<LotRange> LotRanges { get; set; }
 
 		public GarageContext(DbContextOptions<GarageContext> options) : base(options)
@@ -29,25 +30,6 @@ namespace ParkingGarageManagement.cs.Models
 			builder.Entity<Person>(entity => {
 				entity.HasIndex(e => e.PersonTz).IsUnique();
 			});
-
-
-			builder.Entity<TicketType>().HasData(
-				new TicketType
-				{
-					Id = 1,
-				   Type = Infrastructure.Enums.TicketType.Vip
-				},
-				new TicketType
-				{
-					Id = 2,
-					Type = Infrastructure.Enums.TicketType.Value
-				},
-				new TicketType
-				{
-					Id = 3,
-					Type = Infrastructure.Enums.TicketType.Regular
-				}
-			);
 
 
 			builder.Entity<Class>().HasData(
@@ -194,8 +176,16 @@ namespace ParkingGarageManagement.cs.Models
 				{
 					CheckIn = DateTime.Now.AddDays(-2),
 					Id = 1,
-					//TODO: Finish lot data seed.
+					VehicleId = 1,
+					LotPosition = 1
 
+				},
+				new Lot()
+				{
+					CheckIn = DateTime.Now.AddDays(-1),
+					Id = 2,
+					VehicleId = 2,
+					LotPosition = 11
 				});
 
 			builder.Entity<Ticket>().HasData(
@@ -207,7 +197,7 @@ namespace ParkingGarageManagement.cs.Models
 					MaxLength = -1,
 					MaxWidth = -1,
 				    Cost = 200,
-					TicketTypeId = 1,
+					TicketType = TicketType.Vip,
 					TimeLimit = 72
 				},
 				new Ticket
@@ -218,7 +208,7 @@ namespace ParkingGarageManagement.cs.Models
 					MaxLength = 2500,
 					MaxWidth = 2500,
 					Cost = 100,
-					TicketTypeId = 2,
+					TicketType = TicketType.Value,
 					TimeLimit = 48
 				},
 				new Ticket
@@ -229,7 +219,7 @@ namespace ParkingGarageManagement.cs.Models
 					MaxLength = 2000,
 					MaxWidth = 2000,
 					Cost = 50,
-					TicketTypeId = 3,
+					TicketType = TicketType.Regular,
 					TimeLimit = 24
 				}
 			);

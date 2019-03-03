@@ -10,14 +10,14 @@ using ParkingGarageManagement.cs.Models;
 namespace ParkingGarageManagement.cs.Migrations
 {
     [DbContext(typeof(GarageContext))]
-    [Migration("20190225165641_tfg")]
-    partial class tfg
+    [Migration("20190301173356_removeTicketTypeId")]
+    partial class removeTicketTypeId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -73,9 +73,16 @@ namespace ParkingGarageManagement.cs.Migrations
                         new
                         {
                             Id = 1,
-                            CheckIn = new DateTime(2019, 2, 23, 18, 56, 41, 233, DateTimeKind.Local).AddTicks(3660),
-                            LotPosition = 0,
-                            VehicleId = 0
+                            CheckIn = new DateTime(2019, 2, 27, 19, 33, 56, 446, DateTimeKind.Local).AddTicks(8029),
+                            LotPosition = 1,
+                            VehicleId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CheckIn = new DateTime(2019, 2, 28, 19, 33, 56, 448, DateTimeKind.Local).AddTicks(3015),
+                            LotPosition = 11,
+                            VehicleId = 2
                         });
                 });
 
@@ -181,13 +188,11 @@ namespace ParkingGarageManagement.cs.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("TicketTypeId");
+                    b.Property<int>("TicketType");
 
                     b.Property<int>("TimeLimit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TicketTypeId");
 
                     b.ToTable("Tickets");
 
@@ -200,7 +205,7 @@ namespace ParkingGarageManagement.cs.Migrations
                             MaxLength = -1,
                             MaxWidth = -1,
                             Name = "Vip",
-                            TicketTypeId = 1,
+                            TicketType = 2,
                             TimeLimit = 72
                         },
                         new
@@ -211,7 +216,7 @@ namespace ParkingGarageManagement.cs.Migrations
                             MaxLength = 2500,
                             MaxWidth = 2500,
                             Name = "Value",
-                            TicketTypeId = 2,
+                            TicketType = 1,
                             TimeLimit = 48
                         },
                         new
@@ -222,7 +227,7 @@ namespace ParkingGarageManagement.cs.Migrations
                             MaxLength = 2000,
                             MaxWidth = 2000,
                             Name = "Regular",
-                            TicketTypeId = 3,
+                            TicketType = 0,
                             TimeLimit = 24
                         });
                 });
@@ -240,36 +245,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TicketClasses");
-                });
-
-            modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.TicketType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Type");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TicketTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Type = 0
-                        });
                 });
 
             modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Vehicle", b =>
@@ -399,14 +374,6 @@ namespace ParkingGarageManagement.cs.Migrations
                     b.HasOne("ParkingGarageManagement.cs.Models.Domain.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ParkingGarageManagement.cs.Models.Domain.Ticket", b =>
-                {
-                    b.HasOne("ParkingGarageManagement.cs.Models.Domain.TicketType", "TicketType")
-                        .WithMany()
-                        .HasForeignKey("TicketTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

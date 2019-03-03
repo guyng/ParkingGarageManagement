@@ -14,7 +14,7 @@ namespace ParkingGarageManagement.cs.Validators
 		{
 			return ticket.MaxHeight >= vehicleDimensionData.Height && ticket.MaxWidth >= vehicleDimensionData.Width
 			                                                       && ticket.MaxLength >= vehicleDimensionData.Length ||
-																   (ticket.TicketType.Type == TicketType.Vip);
+																   (ticket.TicketType == TicketType.Vip);
 		}
 	}
 }

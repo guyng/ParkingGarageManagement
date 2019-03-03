@@ -19,6 +19,7 @@ export class GarageStateComponent {
     debugger;
     params = params.append('inputDate',todayDate);
     http.get<any[]>(baseUrl + 'api/Parking/GetListOfLateParkingPeople',{params: params}).subscribe(result => {
+      debugger;
       this.listOfLateParkingPeople = result;
     });
   }

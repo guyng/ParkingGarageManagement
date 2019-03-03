@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using ParkingGarageManagement.cs.Models;
 using ParkingGarageManagement.cs.Models.Domain;
 using ParkingGarageManagement.cs.Models.DTO;
 using ParkingGarageManagement.cs.Repositories.Abstract;
@@ -25,10 +27,12 @@ namespace ParkingGarageManagement.cs.Controllers
 		private readonly IRepository<LotRange> _lotRangeRepository;
 		private readonly IRepository<Ticket> _ticketRepository;
 		private readonly IRepository<Person> _peopleRepository;
+		private readonly DbContextOptions<GarageContext> _options;
 
 		public ParkingController(IRepository<Vehicle> vehicleRepository,
 			IRepository<VehicleType> vehicleTypeRepository, IRepository<Ticket> ticketRepository,
-			IRepository<Lot> lotRepository, IRepository<LotRange> lotRangeRepository, IRepository<Person> peopleRepository)
+			IRepository<Lot> lotRepository, IRepository<LotRange> lotRangeRepository, IRepository<Person> peopleRepository,
+			DbContextOptions<GarageContext> options)
 		{
 			_vehicleRepository = vehicleRepository;
 			_vehicleTypeRepository = vehicleTypeRepository;
@@ -36,6 +40,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			_lotRepository = lotRepository;
 			_lotRangeRepository = lotRangeRepository;
 			_peopleRepository = peopleRepository;
+			_options = options;
 		}
 
 		[HttpGet("[action]")]
@@ -119,8 +124,7 @@ namespace ParkingGarageManagement.cs.Controllers
 
 			try
 			{
-				var dimensionData = checkIn.VehicleDimensionData;
-				var ticket = await _ticketRepository.Query().Include(t => t.TicketType).SingleOrDefaultAsync(c => c.Name == checkIn.TicketType.ToString());
+				var ticket = await _ticketRepository.Query().SingleOrDefaultAsync(c => c.TicketType == checkIn.TicketType);
 				if (ticket == null)
 				{
 					return BadRequest();
@@ -133,12 +137,12 @@ namespace ParkingGarageManagement.cs.Controllers
 				{
 					return BadRequest("No available lot.");
 				}
-
+				var dimensionData = checkIn.VehicleDimensionData;
 				if (!VehicleDimensionValidator.Validate(dimensionData, ticket))
 				{
 					var alternativeTickets = await _ticketRepository.Query().Where(t => (t.MaxHeight > dimensionData.Height &&
 																				  t.MaxWidth > dimensionData.Width &&
-																				  t.MaxLength > dimensionData.Length) || t.TicketType.Type == TicketType.Vip).ToListAsync();
+																				  t.MaxLength > dimensionData.Length) || t.TicketType == TicketType.Vip).ToListAsync();
 					var result = new { ChosenTicket = ticket, alternativeTickets };
 					return Ok(result);
 				}
@@ -178,7 +182,6 @@ namespace ParkingGarageManagement.cs.Controllers
 		public async Task<IActionResult> CheckOutVehicle([FromBody] CheckOutData checkOut)
 		{
 			var vehicle = await _vehicleRepository.Query().Include(v => v.Ticket)
-				.Include(t => t.Ticket.TicketType)
 				.SingleOrDefaultAsync
 				(v => v.Id == checkOut.VehicleId);
 			var lot = await _lotRepository.Query().SingleOrDefaultAsync(l => l.Vehicle == vehicle);
@@ -189,7 +192,7 @@ namespace ParkingGarageManagement.cs.Controllers
 			var checkInOutHoursDiff = (checkOut.Checkout - lot.CheckIn).TotalHours;
 			var notPermittedParkHours = checkInOutHoursDiff - vehicle.Ticket.TimeLimit;
 			var exceededTimeLimit =
-				notPermittedParkHours > 0 && vehicle.Ticket.TicketType.Type != TicketType.Vip;
+				notPermittedParkHours > 0 && vehicle.Ticket.TicketType != TicketType.Vip;
 			if (exceededTimeLimit)
 			{
 				var priceToPay = notPermittedParkHours * vehicle.Ticket.Cost;
@@ -199,6 +202,100 @@ namespace ParkingGarageManagement.cs.Controllers
 
 			await _vehicleRepository.RemoveAsync(vehicle);
 			return Ok(new {AmountOfParkedHours = checkInOutHoursDiff});
+		}
+
+
+		[HttpPost("[action]")]
+		public async Task<IActionResult> CreateRandomVehicles([FromBody]int count = 10)
+		{
+		//	var estimated = Stopwatch.StartNew();
+			var randomCreatedVehicles = await CreateVehicles(count);
+			//var elapsed1 = $"1 elapsed: {estimated.Elapsed}";
+			////double avgEstimated = 0;
+			////long sumEstimated = 0;
+			//estimated.Restart();
+			//List<Vehicle> forloopList = new List<Vehicle>();
+			//for (int i = 0; i < 30; i++)
+			//{
+			//	var randomCreatedVehicles = await CreateVehicles(count);
+			//	forloopList.AddRange(randomCreatedVehicles);
+			//}
+
+			//var elapsed10 = $"10 elapsed: {estimated.Elapsed}";
+			//estimated.Restart();
+
+			//List<Vehicle> forloopListTPL = new List<Vehicle>();
+			////await Task.Run(async() =>
+			////{
+			////	Parallel.For(0, 10, async d =>
+			////	{
+			////		var randomCreatedVehicles = await CreateVehicles(count, true);
+			////		forloopListTPL.AddRange(randomCreatedVehicles);
+			////	});
+			////	await Task.Delay(1);
+			////});
+
+			//List<Task> tasks = new List<Task>();
+			//for (int i = 0; i < 30; i++)
+			//{
+			//	tasks.Add(await Task.Factory.StartNew((async () =>
+			//	{
+			//		var randomCreatedVehicles = await CreateVehicles(count,true);
+			//		forloopListTPL.AddRange(randomCreatedVehicles);
+			//	})));
+			//}
+
+			//await Task.WhenAll(tasks);
+			//var elapsed10fortpl = $"10 elapsed for tpl: {estimated.Elapsed}";
+			//estimated.Stop();
+			if (randomCreatedVehicles != null)
+			{
+				return Ok(randomCreatedVehicles);
+			}
+
+			return BadRequest();
+		}
+
+		private async Task<List<Vehicle>> CreateVehicles(int count,bool parallelFor = false)
+		{
+			
+			List<Vehicle> result = new List<Vehicle>();
+			while (count-- > 0)
+			{
+				Vehicle vehicle = new Vehicle();
+				if (parallelFor)
+				{
+					using (GarageContext dbContext = new GarageContext(_options))
+					{
+						vehicle.Ticket = await  dbContext.Tickets.Skip(new Random()
+							.Next(0, dbContext.Tickets.Count(t => true))).Take(1).FirstAsync();
+						vehicle.PersonId = (await dbContext.Persons
+							.Skip(new Random()
+								.Next(0, dbContext.Persons.Count(t => true))).Take(1).FirstAsync()).Id;
+						vehicle.VehicleType = await dbContext.VehicleTypes
+							.Skip(new Random()
+								.Next(0, dbContext.VehicleTypes.Count(v => true))).Take(1).FirstAsync();
+					}
+				}
+				else
+				{
+					vehicle.Ticket = await _ticketRepository.Query()
+						.Skip(new Random()
+							.Next(0, _ticketRepository.Table.Count(t => true))).Take(1).FirstAsync();
+					vehicle.PersonId = (await _peopleRepository.Query()
+						.Skip(new Random()
+							.Next(0, _peopleRepository.Table.Count(t => true))).Take(1).FirstAsync()).Id;
+					vehicle.VehicleType = await _vehicleTypeRepository.Query()
+						.Skip(new Random()
+							.Next(0, _vehicleTypeRepository.Table.Count(v => true))).Take(1).FirstAsync();
+				}
+				
+				vehicle.VehicleHeight = new Random().Next(0, 99999);
+				vehicle.VehicleWidth = new Random().Next(0, 99999);
+				vehicle.VehicleLength = new Random().Next(0, 99999);		
+				result.Add(vehicle);
+			}
+			return result;
 		}
 
 		//TODO: Add services, Use tasks everywhere, refactor the code.

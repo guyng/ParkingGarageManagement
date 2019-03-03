@@ -75,7 +75,7 @@ export class CheckInComponent implements OnInit {
       if (result === 202) {
         this.checkinSuccess = true;
         setTimeout(() => {
-          this.router.navigate(['fetch-data']);
+          this.router.navigate(['garage-state']);
         }, 2000);
       }
       else {

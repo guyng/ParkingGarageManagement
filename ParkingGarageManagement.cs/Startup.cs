@@ -32,7 +32,7 @@ namespace ParkingGarageManagement.cs
 				configuration.RootPath = "ClientApp/dist";
 			});
 			services.AddDbContext<GarageContext>(options =>
-				options.UseSqlServer(Configuration.GetConnectionString("GarageDatabase")));
+				options.UseSqlServer(Configuration.GetConnectionString("GarageDatabase")),ServiceLifetime.Transient);
 	//		services.AddScoped<IRepository<Person>, PeopleRepository>();
 			services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 		}
